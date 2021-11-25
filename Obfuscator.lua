@@ -423,7 +423,7 @@ local FixedList = {}
 
 __module.SetFixedList = function(_list)
 
-    if type(_path) ~= "table" then
+    if type(_list) ~= "table" then
         error("table expected")
     end
 
@@ -527,6 +527,9 @@ __module.Obfuscate = function(_path, _debug)
                 end
             end
         end
+
+        _result = string.gsub(_result, "<const>=", "<const> =")
+        _result = string.gsub(_result, "<close>=", "<close> =")
 
         _in_file:close()
 
