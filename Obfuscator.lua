@@ -1,23 +1,22 @@
-local __module = {} 
+local __module = {}
 
 local PathFile = nil
 
-local WordList = 
-{
+local WordList = {
     "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
     "_",
-    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", 
+    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
     "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
-    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", 
+    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
     "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
 }
 
 local KeywordList = {}
 
 for _, _word in ipairs({
-    "and", "break", "do", "else", "elseif", "end", 
-    "false", "for", "function", "if", "in", "local", 
-    "nil", "not", "or", "repeat", "return", "then", 
+    "and", "break", "do", "else", "elseif", "end",
+    "false", "for", "function", "if", "in", "local",
+    "nil", "not", "or", "repeat", "return", "then",
     "true", "until", "while", "goto"
 }) do KeywordList[_word] = string.upper(_word) end
 
@@ -27,8 +26,7 @@ for _, _word in ipairs({
     "keyword", "identifier", "literal", "operator"
 }) do TokenType[_word] = string.upper(_word) end
 
-local ErrorMsg = 
-{
+local ErrorMsg = {
     malformed_number = "malformed number",
     unexpected_symbol = "unexpected symbol"
 }
@@ -54,17 +52,16 @@ local Tokenize = function(_code, _tk_list)
         local _char = _At(_code, _idx)
 
         if string.match(_char, "[%s]") then
-            if _char == "\n" then 
-                _line_num = _line_num + 1 
+            if _char == "\n" then
+                _line_num = _line_num + 1
             end
             _idx = _idx + 1
         elseif string.match(_char, "[%a_]")then
             local _idx_start = _idx
-            while string.match(_At(_code, _idx), "[%w_]") do 
+            while string.match(_At(_code, _idx), "[%w_]") do
                 _idx = _idx + 1
             end
-            local _tk = 
-            {
+            local _tk = {
                 type = TokenType.identifier,
                 value = string.sub(_code, _idx_start, _idx - 1),
                 line = _line_num
@@ -92,13 +89,13 @@ local Tokenize = function(_code, _tk_list)
                     line = _line_num
                 })
             else
-                while string.match(_At(_code, _idx), "[%d]") do 
+                while string.match(_At(_code, _idx), "[%d]") do
                     _idx = _idx + 1
                 end
                 local _tmp_char = _At(_code, _idx)
                 if _tmp_char == "." and _At(_code, _idx + 1) ~= "." then
                     _idx = _idx + 1
-                    while string.match(_At(_code, _idx), "[%d]") do 
+                    while string.match(_At(_code, _idx), "[%d]") do
                         _idx = _idx + 1
                     end
                     if string.lower(_tmp_char) == "e" then
@@ -106,7 +103,7 @@ local Tokenize = function(_code, _tk_list)
                         if string.match(_At(_code, _idx), "[%+%-]") then
                             _idx = _idx + 1
                         end
-                        while string.match(_At(_code, _idx), "[%d]") do 
+                        while string.match(_At(_code, _idx), "[%d]") do
                             _idx = _idx + 1
                         end
                     end
@@ -115,7 +112,7 @@ local Tokenize = function(_code, _tk_list)
                     if string.match(_At(_code, _idx), "[%+%-]") then
                         _idx = _idx + 1
                     end
-                    while string.match(_At(_code, _idx), "[%d]") do 
+                    while string.match(_At(_code, _idx), "[%d]") do
                         _idx = _idx + 1
                     end
                 end
@@ -218,7 +215,7 @@ local Tokenize = function(_code, _tk_list)
                 end
                 if _At(_code, _idx) == "[" then
                     local _str_end = string.format("]%s]", string.rep("=", _num_equals))
-                    while _Has(_code, _idx) and 
+                    while _Has(_code, _idx) and
                         string.sub(_code, _idx, _idx + #_str_end - 1) ~= _str_end do
                         if _At(_code, _idx) == "\n" then _line_num = _line_num + 1 end
                         _idx = _idx + 1
@@ -238,7 +235,7 @@ local Tokenize = function(_code, _tk_list)
                 end
             elseif _At(_code, _idx + 1) == "[" then
                 local _idx_start = _idx
-                while _Has(_code, _idx) and 
+                while _Has(_code, _idx) and
                     string.sub(_code, _idx, _idx + 1) ~= "]]" do
                     if _At(_code, _idx) == "\n" then _line_num = _line_num + 1 end
                     _idx = _idx + 1
@@ -311,7 +308,7 @@ local Tokenize = function(_code, _tk_list)
                         end
                         if _At(_code, _idx) == "[" then
                             local _str_end = string.format("]%s]", string.rep("=", _num_equals))
-                            while _Has(_code, _idx) and 
+                            while _Has(_code, _idx) and
                                 string.sub(_code, _idx, _idx + #_str_end - 1) ~= _str_end do
                                 if _At(_code, _idx) == "\n" then _line_num = _line_num + 1 end
                                 _idx = _idx + 1
@@ -326,7 +323,7 @@ local Tokenize = function(_code, _tk_list)
                         end
                     elseif _At(_code, _idx) == "[" then
                         local _idx_start = _idx
-                        while _Has(_code, _idx) and 
+                        while _Has(_code, _idx) and
                             string.sub(_code, _idx, _idx + 1) ~= "]]" do
                             if _At(_code, _idx) == "\n" then _line_num = _line_num + 1 end
                             _idx = _idx + 1
@@ -400,7 +397,7 @@ local Tokenize = function(_code, _tk_list)
                 while _Has(_code, _idx) and _At(_code, _idx) ~= "\"" do
                     _idx = _idx + 1
                 end
-            else 
+            else
                 while _Has(_code, _idx) and _At(_code, _idx) ~= "\'" do
                     _idx = _idx + 1
                 end
@@ -519,7 +516,7 @@ __module.Obfuscate = function(_path, _debug)
             else
                 _result = _result.._token.value
             end
-            
+
             if _token.type ~= "OPERATOR" then
                 local _next_token = _token_list[_idx + 1]
                 if _next_token and _next_token.type ~= "OPERATOR" then
@@ -540,7 +537,7 @@ __module.Obfuscate = function(_path, _debug)
         if _debug then
             local _debug_list = {}
             for _, _token in ipairs(_token_list) do
-                local _info = 
+                local _info =
                 {
                     src = _token.value,
                     type = _token.type,
